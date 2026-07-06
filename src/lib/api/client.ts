@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { REQUEST_TIMEOUT_MS } from '@/constants';
+import { normalizeAxiosError } from '@/utils';
 
 export const apiClient = axios.create({
   baseURL: process.env.EXPO_PUBLIC_API_BASE_URL,
@@ -8,3 +9,8 @@ export const apiClient = axios.create({
     Accept: 'application/json',
   },
 });
+
+apiClient.interceptors.response.use(
+  response => response,
+  (error: unknown) => Promise.reject(normalizeAxiosError(error)),
+);

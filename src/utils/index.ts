@@ -1,7 +1,10 @@
 export {
+  createAppError,
+  isAppError,
   isRetryableError,
   isNetworkError,
   isNotFoundError,
   getUserMessage,
-  createAppError,
+  normalizeAxiosError,
+  normalizeError,
 } from './errorUtils';
