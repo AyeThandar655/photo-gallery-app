@@ -1,13 +1,23 @@
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
+import { useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { EmptyState, ErrorState } from '@/shared/components/feedback';
 import { ScreenContainer } from '@/shared/components/layout';
+import type { PhotoId } from '@/types';
 import { getUserMessage, isRetryableError } from '@/utils';
 import { PhotoGrid } from './components';
 import { useGallery } from './useGallery';
 
 export function GalleryScreen() {
+  const router = useRouter();
   const { items, isLoading, isRefetching, error, refetch } = useGallery();
+
+  const handlePressItem = useCallback(
+    (id: PhotoId) => {
+      router.push(`/photos/${id}`);
+    },
+    [router],
+  );
 
   const renderContent = () => {
     if (error !== null && !isLoading) {
@@ -40,6 +50,7 @@ export function GalleryScreen() {
         isLoading={isLoading}
         refreshing={isRefetching}
         onRefresh={refetch}
+        onPressItem={handlePressItem}
       />
     );
   };
