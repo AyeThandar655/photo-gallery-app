@@ -9,7 +9,7 @@ export const UploadPhotoBodySchema = z.object({
   uri: z.string().min(1),
   type: z.string().min(1),
   name: z.string().min(1),
-  tags: z.array(z.string()).default([]),
+  tags: z.array(z.string()),
 });
 
 export const UploadPhotoResponseSchema = z.object({

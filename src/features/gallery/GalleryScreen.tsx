@@ -1,8 +1,10 @@
 import { Stack, useRouter } from 'expo-router';
 import { useCallback } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { EmptyState, ErrorState } from '@/shared/components/feedback';
 import { ScreenContainer } from '@/shared/components/layout';
+import { Text } from '@/shared/components/ui';
+import { colors, spacing } from '@/shared/theme';
 import type { PhotoId } from '@/types';
 import { getUserMessage, isRetryableError } from '@/utils';
 import { PhotoGrid } from './components';
@@ -61,6 +63,22 @@ export function GalleryScreen() {
         options={{
           title: 'My Gallery',
           headerLargeTitle: true,
+          headerRight: () => (
+            <Pressable
+              onPress={() => router.push('/upload')}
+              hitSlop={8}
+              accessibilityRole="button"
+              accessibilityLabel="Upload a photo"
+              style={({ pressed }) => [
+                styles.uploadButton,
+                pressed && styles.uploadButtonPressed,
+              ]}
+            >
+              <Text variant="body" style={styles.uploadButtonText}>
+                +
+              </Text>
+            </Pressable>
+          ),
         }}
       />
       <ScreenContainer scrollable={false} padding={false}>
@@ -73,5 +91,19 @@ export function GalleryScreen() {
 const styles = StyleSheet.create({
   centred: {
     flex: 1,
+  },
+  uploadButton: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: 6,
+  },
+  uploadButtonPressed: {
+    opacity: 0.6,
+  },
+  uploadButtonText: {
+    color: colors.primary,
+    fontSize: 24,
+    lineHeight: 28,
+    fontWeight: '400',
   },
 });
