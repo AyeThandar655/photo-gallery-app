@@ -8,3 +8,5 @@ export {
   normalizeAxiosError,
   normalizeError,
 } from './errorUtils';
+
+export { safeParseResponse } from './schemaUtils';

@@ -1,5 +1,6 @@
 import { AxiosError, AxiosHeaders } from 'axios';
 import type { InternalAxiosRequestConfig, AxiosResponse } from 'axios';
+import { z } from 'zod';
 import {
   createAppError,
   getUserMessage,
@@ -173,6 +174,35 @@ describe('normalizeError', () => {
   it('maps null → UNKNOWN_ERROR', () => {
     const result = normalizeError(null);
     expect(result.type).toBe('UNKNOWN_ERROR');
+  });
+
+  it('maps a ZodError → VALIDATION_ERROR with retryable: false', () => {
+    const zodError = z.object({ id: z.string() }).safeParse(null);
+    expect(zodError.success).toBe(false);
+    if (!zodError.success) {
+      const result = normalizeError(zodError.error);
+      expect(result.type).toBe('VALIDATION_ERROR');
+      expect(result.retryable).toBe(false);
+    }
+  });
+
+  it('ZodError message includes field context', () => {
+    const zodError = z.object({ id: z.string() }).safeParse({});
+    expect(zodError.success).toBe(false);
+    if (!zodError.success) {
+      const result = normalizeError(zodError.error);
+      // Message should mention the field path
+      expect(result.message).toMatch(/id/);
+    }
+  });
+
+  it('preserves ZodError as originalError', () => {
+    const zodError = z.string().safeParse(null);
+    expect(zodError.success).toBe(false);
+    if (!zodError.success) {
+      const result = normalizeError(zodError.error);
+      expect(result.originalError).toBe(zodError.error);
+    }
   });
 });
 

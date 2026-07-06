@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { ZodError } from 'zod';
 import type { AppError, AppErrorType } from '@/types';
 
 const ERROR_MESSAGES: Record<AppErrorType, string> = {
@@ -122,6 +123,18 @@ export function normalizeError(error: unknown): AppError {
 
   if (axios.isAxiosError(error)) {
     return normalizeAxiosError(error);
+  }
+
+  // ZodError: schema validation failed on an API response.
+  if (error instanceof ZodError) {
+    const fieldSummary = error.issues
+      .slice(0, 3)
+      .map(i => `${i.path.join('.')}: ${i.message}`)
+      .join('; ');
+    return createAppError('VALIDATION_ERROR', {
+      message: `Received unexpected data from the server${fieldSummary ? ` (${fieldSummary})` : ''}.`,
+      originalError: error,
+    });
   }
 
   return createAppError('UNKNOWN_ERROR', { originalError: error });
