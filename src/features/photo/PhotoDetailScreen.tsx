@@ -1,6 +1,5 @@
-import { useRouter } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { Alert, Image, Pressable, StyleSheet, View } from 'react-native';
-import { Stack } from 'expo-router';
 import { Text } from '@/shared/components/ui';
 import { ErrorState, Loading } from '@/shared/components/feedback';
 import { ScreenContainer } from '@/shared/components/layout';

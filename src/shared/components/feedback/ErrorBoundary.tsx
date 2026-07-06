@@ -47,18 +47,25 @@ export class ErrorBoundary extends Component<
     const { hasError, error } = this.state;
     const { children, fallback } = this.props;
 
-    if (!hasError) {
+    // No error: render children as normal.
+    if (!hasError || error === null) {
       return children;
     }
 
+    // Custom fallback: render-prop or ReactNode.
     if (fallback !== undefined) {
       return typeof fallback === 'function'
-        ? (fallback as FallbackRender)(error!, this.handleReset)
+        ? (fallback as FallbackRender)(error, this.handleReset)
         : fallback;
     }
 
+    // Default fallback UI.
     return (
-      <View style={styles.container}>
+      <View
+        style={styles.container}
+        accessibilityRole="alert"
+        accessibilityLiveRegion="assertive"
+      >
         <Text style={styles.icon} accessibilityElementsHidden>
           ⚠️
         </Text>
@@ -71,7 +78,7 @@ export class ErrorBoundary extends Component<
           align="center"
           style={styles.message}
         >
-          {error?.message ?? 'An unexpected error occurred.'}
+          {error.message.length > 0 ? error.message : 'An unexpected error occurred.'}
         </Text>
         <Button
           label="Try again"

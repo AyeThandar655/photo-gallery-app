@@ -62,7 +62,7 @@ export function PhotoGrid({
     );
   }
 
-  // Data mode 
+  // Data mode
   return (
     <FlatList<GalleryItem>
       data={items}
@@ -79,6 +79,10 @@ export function PhotoGrid({
       columnWrapperStyle={styles.row}
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}
+      initialNumToRender={6}
+      maxToRenderPerBatch={4}
+      windowSize={5}
+      removeClippedSubviews
       refreshControl={
         onRefresh !== undefined ? (
           <RefreshControl
@@ -103,7 +107,6 @@ const styles = StyleSheet.create({
   },
   card: {
     flex: 1,
-    maxWidth: undefined,
   },
   skeletonGrid: {
     flexDirection: 'row',
