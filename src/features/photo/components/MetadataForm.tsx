@@ -1,14 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import { StyleSheet, View } from 'react-native';
-import { Button } from '@/shared/components/ui';
-import { Text } from '@/shared/components/ui';
+import { Button, TagInput, Text } from '@/shared/components/ui';
 import { colors, spacing } from '@/shared/theme';
 import { UpdateMetadataBodySchema } from '@/schemas';
 import type { PhotoId, UpdateMetadataBody } from '@/types';
 import { getUserMessage } from '@/utils';
 import { useUpdateMetadata } from '../mutations';
-import { TagInput } from './TagInput';
 
 interface MetadataFormProps {
   photoId: PhotoId;

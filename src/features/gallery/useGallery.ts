@@ -46,7 +46,8 @@ export function useGallery(): UseGalleryResult {
   const refetch = useCallback(() => {
     void idsQuery.refetch();
     void metadataQuery.refetch();
-  }, [idsQuery, metadataQuery]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [idsQuery.refetch, metadataQuery.refetch]);
 
   return { items, isLoading, isRefetching, error, refetch };
 }

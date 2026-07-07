@@ -2,15 +2,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { StyleSheet, View } from 'react-native';
-import { Button, Text } from '@/shared/components/ui';
+import { Button, TagInput, Text } from '@/shared/components/ui';
 import { colors, spacing } from '@/shared/theme';
 import { UploadPhotoBodySchema } from '@/schemas';
 import type { UploadPhotoBody, UploadPhotoResponse } from '@/types';
 import { getUserMessage } from '@/utils';
-import { useUploadPhoto } from '../mutation';
+import { useUploadPhoto } from '../mutations';
 import { useImagePicker } from '../useImagePicker';
 import { ImagePreview } from './ImagePreview';
-import { TagInput } from '../../photo/components/TagInput';
 
 interface UploadFormProps {
   onSuccess: (response: UploadPhotoResponse) => void;
@@ -85,7 +84,12 @@ export function UploadForm({ onSuccess }: UploadFormProps) {
 
       {/* Mutation error banner */}
       {mutation.isError && (
-        <View style={styles.errorBanner} accessibilityRole="alert">
+        <View
+          style={styles.errorBanner}
+          accessibilityRole="alert"
+          accessibilityLiveRegion="assertive"
+          accessibilityLabel={getUserMessage(mutation.error)}
+        >
           <Text variant="caption" style={styles.errorBannerText}>
             {getUserMessage(mutation.error)}
           </Text>

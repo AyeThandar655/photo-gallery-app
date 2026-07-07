@@ -1,5 +1,4 @@
-import { apiClient } from '@/lib/api';
-import { ENDPOINTS } from '@/lib/api';
+import { apiClient, ENDPOINTS } from '@/lib/api';
 import { PhotoMetadataSchema } from '@/schemas';
 import type { PhotoId, PhotoMetadata } from '@/types';
 import { isAppError, isNotFoundError, safeParseResponse } from '@/utils';

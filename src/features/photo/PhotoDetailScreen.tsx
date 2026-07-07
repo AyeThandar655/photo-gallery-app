@@ -59,7 +59,7 @@ export function PhotoDetailScreen({ id }: PhotoDetailScreenProps) {
       );
     }
 
-    if (metadataQuery.error !== null && metadataQuery.error !== undefined) {
+    if (metadataQuery.error != null) {
       return (
         <ErrorState
           title="Couldn't load tags"
@@ -119,7 +119,7 @@ export function PhotoDetailScreen({ id }: PhotoDetailScreenProps) {
           source={{ uri: imageUri }}
           style={styles.image}
           resizeMode="cover"
-          accessibilityLabel="Photo"
+          accessibilityLabel={`Photo ${id}`}
           accessibilityRole="image"
         />
 

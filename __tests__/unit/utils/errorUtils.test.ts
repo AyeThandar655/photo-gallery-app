@@ -103,6 +103,20 @@ describe('normalizeAxiosError', () => {
     expect(error.retryable).toBe(false);
   });
 
+  it('maps 422 → BAD_REQUEST with retryable: false', () => {
+    const error = normalizeAxiosError(makeHttpError(422));
+    expect(error.type).toBe('BAD_REQUEST');
+    expect(error.retryable).toBe(false);
+    expect(error.statusCode).toBe(422);
+  });
+
+  it('maps 429 → SERVICE_UNAVAILABLE with retryable: true', () => {
+    const error = normalizeAxiosError(makeHttpError(429));
+    expect(error.type).toBe('SERVICE_UNAVAILABLE');
+    expect(error.retryable).toBe(true);
+    expect(error.statusCode).toBe(429);
+  });
+
   it.each([500, 502, 504])('maps %d → SERVER_ERROR with retryable: false', status => {
     const error = normalizeAxiosError(makeHttpError(status));
     expect(error.type).toBe('SERVER_ERROR');

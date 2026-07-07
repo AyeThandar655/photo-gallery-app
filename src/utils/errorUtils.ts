@@ -95,8 +95,22 @@ export function normalizeAxiosError(error: unknown): AppError {
       });
 
     case 400:
+    case 422:
       return createAppError('BAD_REQUEST', {
-        statusCode: 400,
+        statusCode: status,
+        originalError: error,
+      });
+
+    case 401:
+    case 403:
+      return createAppError('UNKNOWN_ERROR', {
+        statusCode: status,
+        originalError: error,
+      });
+
+    case 429:
+      return createAppError('SERVICE_UNAVAILABLE', {
+        statusCode: 429,
         originalError: error,
       });
 

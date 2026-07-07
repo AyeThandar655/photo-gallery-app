@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import {
   launchImageLibraryAsync,
   useMediaLibraryPermissions,
@@ -18,7 +18,7 @@ export function useImagePicker(): UseImagePickerResult {
   const [asset, setAsset] = useState<PickedAsset | null>(null);
   const [permissionResponse, requestPermission] = useMediaLibraryPermissions();
 
-  const pick = async (): Promise<void> => {
+  const pick = useCallback(async (): Promise<void> => {
     if (!permissionResponse?.granted) {
       const result = await requestPermission();
       if (!result.granted) return;
@@ -37,9 +37,9 @@ export function useImagePicker(): UseImagePickerResult {
         setAsset(first);
       }
     }
-  };
+  }, [permissionResponse?.granted, requestPermission]);
 
-  const clear = () => setAsset(null);
+  const clear = useCallback(() => setAsset(null), []);
 
   return {
     asset,

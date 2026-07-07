@@ -1,5 +1,6 @@
 import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
 import type { ListRenderItemInfo } from 'react-native';
+import { useCallback } from 'react';
 import { useWindowDimensions } from 'react-native';
 import { Skeleton } from '@/shared/components/feedback';
 import { colors, radii, spacing } from '@/shared/theme';
@@ -62,20 +63,25 @@ export function PhotoGrid({
     );
   }
 
+  const renderItem = useCallback(
+    ({ item }: ListRenderItemInfo<GalleryItem>) => (
+      <PhotoCard
+        item={item}
+        width={cardWidth}
+        onPress={onPressItem}
+        style={styles.card}
+      />
+    ),
+    [cardWidth, onPressItem],
+  );
+
   // Data mode
   return (
     <FlatList<GalleryItem>
       data={items}
       keyExtractor={item => item.id}
       numColumns={NUM_COLUMNS}
-      renderItem={({ item }: ListRenderItemInfo<GalleryItem>) => (
-        <PhotoCard
-          item={item}
-          width={cardWidth}
-          onPress={onPressItem}
-          style={styles.card}
-        />
-      )}
+      renderItem={renderItem}
       columnWrapperStyle={styles.row}
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}

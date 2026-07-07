@@ -1,5 +1,4 @@
-import { apiClient } from '@/lib/api';
-import { ENDPOINTS } from '@/lib/api';
+import { apiClient, ENDPOINTS } from '@/lib/api';
 import { UploadPhotoResponseSchema } from '@/schemas';
 import type { UploadPhotoBody, UploadPhotoResponse } from '@/types';
 import { safeParseResponse } from '@/utils';
