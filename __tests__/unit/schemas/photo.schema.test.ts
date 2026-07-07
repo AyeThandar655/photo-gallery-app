@@ -70,11 +70,21 @@ describe('UploadPhotoBodySchema', () => {
     }
   });
 
-  it('defaults tags to [] when omitted', () => {
+  it('rejects when tags is omitted (required field, no default)', () => {
     const result = UploadPhotoBodySchema.safeParse({
       uri: 'file:///path/image.jpg',
       type: 'image/jpeg',
       name: 'photo.jpg',
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('accepts tags as an empty array', () => {
+    const result = UploadPhotoBodySchema.safeParse({
+      uri: 'file:///path/image.jpg',
+      type: 'image/jpeg',
+      name: 'photo.jpg',
+      tags: [],
     });
     expect(result.success).toBe(true);
     if (result.success) expect(result.data.tags).toEqual([]);

@@ -4,7 +4,7 @@ const config: Config = {
   preset: 'jest-expo',
 
   transform: {
-    '^.+\\.(t|j)sx?$': [
+    '^.+\\.(t|j)sx?$|^.+\\.mjs$': [
       'babel-jest',
       { presets: ['babel-preset-expo'] },
     ],
@@ -22,6 +22,13 @@ const config: Config = {
         '@react-navigation/.*',
         '@tanstack/.*',
         'msw',
+        '@mswjs/.*',
+        '@bundled-es-modules/.*',
+        'until-async',
+        'rettime',
+        '@open-draft/.*',
+        'headers-utils',
+        'strict-event-emitter',
         'undici',
       ].join('|') +
       ')',
@@ -34,7 +41,8 @@ const config: Config = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
 
   testMatch: [
-    '**/__tests__/**/*.(ts|tsx)',
+    '**/__tests__/**/*.test.(ts|tsx)',
+    '**/__tests__/**/*.spec.(ts|tsx)',
     '**/?(*.)+(spec|test).(ts|tsx)',
   ],
 
