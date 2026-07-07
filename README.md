@@ -76,7 +76,6 @@ npx expo start --clear
 Then:
 - Press **i** to open on iOS simulator
 - Press **a** to open on Android emulator
-- Press **w** to open in a web browser
 - Scan the QR code with **Expo Go** on a physical device
 
 ---
@@ -231,7 +230,6 @@ npm test
 npm run test:coverage
 ```
 
-Coverage threshold: **70 %** branches / functions / lines / statements across all `src/**` files.
 
 ### Test architecture
 
@@ -239,8 +237,6 @@ Coverage threshold: **70 %** branches / functions / lines / statements across al
 |---|---|---|
 | Unit | Jest | `smartRetry`, `retryDelay`, all Zod schemas, `normalizeAxiosError`, `normalizeError`, `safeParseResponse`, all `AppErrorType` mappings |
 | Integration | Jest + RTL + MSW v2 | `fetchPhotoIds`, `fetchAllMetadata`, `fetchMetadata`, `updateMetadata`, `deletePhoto` services; `useGallery` hook; `useUpdateMetadata` and `useDeletePhoto` mutations including optimistic update and rollback paths |
-
-MSW v2 uses the native (`msw/native`) interceptor — no ServiceWorker, works in Node.js test environment.
 
 Each integration test suite creates a fresh `QueryClient` per test (`retry: false`, `gcTime: Infinity`) and tears down cache via `queryClient.clear()` in `afterEach`.
 
