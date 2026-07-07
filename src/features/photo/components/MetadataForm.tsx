@@ -68,12 +68,12 @@ export function MetadataForm({ photoId, initialTags, onSuccess }: MetadataFormPr
       )}
 
       <Button
-        label={mutation.isPending ? 'Saving…' : 'Save'}
+        label={mutation.isPending ? 'Updating…' : 'Update'}
         onPress={handleSubmit(onSubmit)}
         loading={mutation.isPending}
         disabled={mutation.isPending}
         style={styles.button}
-        accessibilityHint="Save the updated tags for this photo"
+        accessibilityHint="Update the tags for this photo"
       />
     </View>
   );
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     color: colors.textError,
   },
   button: {
-    alignSelf: 'flex-start',
-    minWidth: 100,
+    alignSelf: 'center',
+    minWidth: 160,
   },
 });

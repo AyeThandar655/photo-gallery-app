@@ -178,7 +178,7 @@ export function PhotoDetailScreen({ id }: PhotoDetailScreenProps) {
 const styles = StyleSheet.create({
   imageWrapper: {
     width: '100%',
-    aspectRatio: 1,
+    aspectRatio: 4 / 3,
     backgroundColor: colors.skeleton,
   },
   image: {
