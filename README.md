@@ -7,7 +7,7 @@ A production-quality mobile photo gallery built with React Native and Expo. Brow
 ## Features
 
 - **Gallery view** — two-column grid with skeleton loading, pull-to-refresh, and empty state
-- **Photo detail** — full-size image with an editable tag form; changes appear instantly via optimistic updates and roll back automatically on failure
+- **Photo detail** — full-size image with fade-in and automatic retry (up to 3×) on server error; editable tag form with changes appearing instantly via optimistic updates that roll back automatically on failure
 - **Upload** — pick a photo from your device library and assign tags before uploading
 - **Offline banner** — animated overlay appears whenever the device loses connectivity; React Query pauses and resumes all network requests automatically
 - **Error handling** — every API error is normalised to a typed `AppError`; retryable errors (503, 429, network timeouts) trigger exponential backoff with jitter; non-retryable errors (404, 400) surface immediately
@@ -209,11 +209,11 @@ The app expects a REST backend at `EXPO_PUBLIC_API_BASE_URL`.
 |--------|------|-------------|
 | `GET` | `/photos` | Returns `string[]` of photo IDs |
 | `GET` | `/photos/:id` | Serves the binary image (used as `Image` `uri`, not fetched via Axios) |
-| `POST` | `/photos` | Upload `multipart/form-data` with `photo` file and repeated `tags` fields; returns `{ id, tags, updatedAt }` |
+| `POST` | `/photos` | Upload `multipart/form-data` with `photo` file and `metadata` JSON field (`{ tags, updatedAt }`); server returns `{ id }` only — the app constructs the full response locally |
 | `DELETE` | `/photos/:id` | Deletes photo and its metadata; returns `204` |
 | `GET` | `/metadata` | Returns `Array<{ id, tags, updatedAt }>` |
 | `GET` | `/metadata/:id` | Returns `{ tags, updatedAt }` for one photo |
-| `PUT` | `/metadata/:id` | Body `{ tags: string[] }`; returns updated `{ tags, updatedAt }` |
+| `PUT` | `/metadata/:id` | Body `{ metadata: { tags: string[], updatedAt: string } }`; server returns `{ id }` — the app constructs the updated metadata locally |
 
 ---
 
