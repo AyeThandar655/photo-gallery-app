@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import {
   Pressable,
   ScrollView,
@@ -10,6 +10,15 @@ import type { StyleProp, ViewStyle } from 'react-native';
 import { Text } from '@/shared/components/ui';
 import { colors, radii, spacing, typography } from '@/shared/theme';
 
+export type TagInputHandle = {
+  /**
+   * Commit any text currently in the input field as a tag.
+   * Returns the committed tag string, or null if there was nothing to commit.
+   * Call synchronously before reading form values for submission.
+   */
+  flushPending: () => string | null;
+};
+
 interface TagInputProps {
   value: string[];
   onChange: (tags: string[]) => void;
@@ -19,10 +28,31 @@ interface TagInputProps {
   style?: StyleProp<ViewStyle>;
 }
 
-export function TagInput({ value, onChange, label, error, hint, style }: TagInputProps) {
+export const TagInput = forwardRef<TagInputHandle, TagInputProps>(function TagInput(
+  { value, onChange, label, error, hint, style },
+  ref,
+) {
   const [inputText, setInputText] = useState('');
   const inputRef = useRef<TextInput>(null);
   const hasError = Boolean(error);
+
+  // Keep a ref to the latest value/onChange so flushPending always sees fresh state.
+  const valueRef = useRef(value);
+  const onChangeRef = useRef(onChange);
+  valueRef.current = value;
+  onChangeRef.current = onChange;
+
+  useImperativeHandle(ref, () => ({
+    flushPending: () => {
+      const tag = inputText.trim().replace(/,$/, '').trim();
+      setInputText('');
+      if (tag.length > 0 && !valueRef.current.includes(tag)) {
+        onChangeRef.current([...valueRef.current, tag]);
+        return tag;
+      }
+      return null;
+    },
+  }), [inputText]);
 
   const commitTag = (raw: string) => {
     const tag = raw.trim().replace(/,$/, '').trim();
@@ -39,8 +69,9 @@ export function TagInput({ value, onChange, label, error, hint, style }: TagInpu
   };
 
   const handleChangeText = (text: string) => {
-    if (text.endsWith(',')) {
-      commitTag(text);
+    // iOS autocorrect may append a space after comma → check both ", " and ","
+    if (text.includes(',')) {
+      commitTag(text.replace(/,.*$/, ''));
     } else {
       setInputText(text);
     }
@@ -94,6 +125,8 @@ export function TagInput({ value, onChange, label, error, hint, style }: TagInpu
         onSubmitEditing={() => commitTag(inputText)}
         blurOnSubmit={false}
         returnKeyType="done"
+        autoCorrect={false}
+        autoCapitalize="none"
         placeholder="Add a tag…"
         placeholderTextColor={colors.textTertiary}
         style={[
@@ -116,7 +149,7 @@ export function TagInput({ value, onChange, label, error, hint, style }: TagInpu
       ) : null}
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   label: {

@@ -14,6 +14,6 @@ export const UploadPhotoBodySchema = z.object({
 
 export const UploadPhotoResponseSchema = z.object({
   id: z.string().min(1),
-  updatedAt: z.string(),
-  tags: z.array(z.string()),
+  updatedAt: z.string().optional(),
+  tags: z.array(z.string()).optional(),
 });

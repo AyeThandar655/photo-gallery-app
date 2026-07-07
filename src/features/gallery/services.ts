@@ -9,7 +9,8 @@ export async function fetchPhotoIds(): Promise<PhotoId[]> {
   if (!result.success) {
     throw result.error;
   }
-  return result.data;
+  // Filter out filesystem artifacts the server may include (e.g. .DS_Store)
+  return result.data.filter(id => !id.startsWith('.'));
 }
 
 export async function fetchAllMetadata(): Promise<PhotoMetadataEntry[]> {

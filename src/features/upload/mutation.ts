@@ -1,1 +1,0 @@
-export { useUploadPhoto } from './mutations';

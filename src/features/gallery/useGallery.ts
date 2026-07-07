@@ -10,6 +10,7 @@ export type UseGalleryResult = {
   isRefetching: boolean;
   error: AppError | null;
   refetch: () => void;
+  refetchIds: () => void;
 };
 
 export function useGallery(): UseGalleryResult {
@@ -43,11 +44,23 @@ export function useGallery(): UseGalleryResult {
   const error: AppError | null =
     idsQuery.error ?? metadataQuery.error ?? null;
 
-  const refetch = useCallback(() => {
-    void idsQuery.refetch();
-    void metadataQuery.refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [idsQuery.refetch, metadataQuery.refetch]);
+  // Destructure stable refetch references before useCallback deps to satisfy
+  // react-hooks/exhaustive-deps without eslint-disable comments.
+  const { refetch: refetchIdsQuery } = idsQuery;
+  const { refetch: refetchMetadataQuery } = metadataQuery;
 
-  return { items, isLoading, isRefetching, error, refetch };
+  // Full refetch — used by pull-to-refresh.
+  const refetch = useCallback(() => {
+    void refetchIdsQuery();
+    void refetchMetadataQuery();
+  }, [refetchIdsQuery, refetchMetadataQuery]);
+
+  // IDs-only refetch — used by useFocusEffect so that returning from the
+  // edit screen does NOT overwrite the mutation's optimistic metadata cache
+  // with a stale GET /metadata response.
+  const refetchIds = useCallback(() => {
+    void refetchIdsQuery();
+  }, [refetchIdsQuery]);
+
+  return { items, isLoading, isRefetching, error, refetch, refetchIds };
 }

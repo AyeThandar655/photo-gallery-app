@@ -11,7 +11,7 @@ export function useUploadPhoto() {
     mutationFn: uploadPhoto,
     retry: MUTATION_RETRY_UPLOAD,
 
-    onSettled: () => {
+    onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.photos.all() });
       void queryClient.invalidateQueries({ queryKey: queryKeys.metadata.root() });
     },

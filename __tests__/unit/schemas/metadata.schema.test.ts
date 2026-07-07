@@ -28,16 +28,18 @@ describe('PhotoMetadataSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('rejects when updatedAt is missing', () => {
+  it('provides empty string default when updatedAt is missing', () => {
     const result = PhotoMetadataSchema.safeParse({ tags: ['test'] });
-    expect(result.success).toBe(false);
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.updatedAt).toBe('');
   });
 
-  it('rejects when tags is missing', () => {
+  it('provides empty array default when tags is missing', () => {
     const result = PhotoMetadataSchema.safeParse({
       updatedAt: '2026-07-01T12:00:00.000Z',
     });
-    expect(result.success).toBe(false);
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.tags).toEqual([]);
   });
 
   it('rejects when tags contains a non-string item', () => {
@@ -76,22 +78,34 @@ describe('PhotoMetadataSchema', () => {
 // PhotoMetadataEntrySchema
 
 describe('PhotoMetadataEntrySchema', () => {
-  it('accepts a valid entry with id', () => {
+  it('accepts server list format { id, metadata: { tags, updatedAt } }', () => {
     const result = PhotoMetadataEntrySchema.safeParse({
       id: 'abc123.jpg',
-      updatedAt: '2026-07-01T12:00:00.000Z',
-      tags: ['sky'],
+      metadata: { tags: ['sky'], updatedAt: '2026-07-01T12:00:00.000Z' },
     });
     expect(result.success).toBe(true);
     if (result.success) {
       expect(result.data.id).toBe('abc123.jpg');
+      expect(result.data.tags).toEqual(['sky']);
+      expect(result.data.updatedAt).toBe('2026-07-01T12:00:00.000Z');
+    }
+  });
+
+  it('accepts empty metadata object and provides defaults', () => {
+    const result = PhotoMetadataEntrySchema.safeParse({
+      id: 'abc123.jpg',
+      metadata: {},
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.tags).toEqual([]);
+      expect(result.data.updatedAt).toBe('');
     }
   });
 
   it('rejects when id is missing', () => {
     const result = PhotoMetadataEntrySchema.safeParse({
-      updatedAt: '2026-07-01T12:00:00.000Z',
-      tags: [],
+      metadata: { tags: [], updatedAt: '2026-07-01T12:00:00.000Z' },
     });
     expect(result.success).toBe(false);
   });
@@ -99,8 +113,7 @@ describe('PhotoMetadataEntrySchema', () => {
   it('rejects when id is an empty string', () => {
     const result = PhotoMetadataEntrySchema.safeParse({
       id: '',
-      updatedAt: '2026-07-01T12:00:00.000Z',
-      tags: [],
+      metadata: {},
     });
     expect(result.success).toBe(false);
   });
@@ -115,19 +128,19 @@ describe('MetadataListResponseSchema', () => {
     if (result.success) expect(result.data).toEqual([]);
   });
 
-  it('accepts an array of valid entries', () => {
+  it('accepts an array of valid entries in server format', () => {
     const result = MetadataListResponseSchema.safeParse([
-      { id: 'a.jpg', updatedAt: '2026-07-01T12:00:00.000Z', tags: ['x'] },
-      { id: 'b.jpg', updatedAt: '2026-07-02T12:00:00.000Z', tags: [] },
+      { id: 'a.jpg', metadata: { tags: ['x'], updatedAt: '2026-07-01T12:00:00.000Z' } },
+      { id: 'b.jpg', metadata: { tags: [],    updatedAt: '2026-07-02T12:00:00.000Z' } },
     ]);
     expect(result.success).toBe(true);
     if (result.success) expect(result.data).toHaveLength(2);
   });
 
-  it('rejects if any item is invalid', () => {
+  it('rejects if any item is missing id', () => {
     const result = MetadataListResponseSchema.safeParse([
-      { id: 'a.jpg', updatedAt: '2026-07-01T12:00:00.000Z', tags: ['x'] },
-      { updatedAt: '2026-07-02T12:00:00.000Z', tags: [] }, // missing id
+      { id: 'a.jpg', metadata: { tags: ['x'] } },
+      { metadata: { tags: [] } }, // missing id
     ]);
     expect(result.success).toBe(false);
   });

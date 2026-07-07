@@ -39,8 +39,8 @@ describe('useGallery', () => {
     expect(first?.id).toBe('photo-1.jpg');
     // imageUri is derived, not fetched
     expect(first?.imageUri).toBe('http://localhost:3000/photos/photo-1.jpg');
-    // Metadata was matched from METADATA_LIST
-    expect(first?.metadata?.tags).toEqual(METADATA_LIST[0]?.tags);
+    // Metadata was matched from METADATA_LIST (schema transforms nested format)
+    expect(first?.metadata?.tags).toEqual(METADATA_LIST[0]?.metadata?.tags);
   });
 
   it('sets metadata to null for photos with no matching metadata entry', async () => {

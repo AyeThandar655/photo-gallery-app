@@ -10,6 +10,7 @@ import { PhotoCard } from './PhotoCard';
 
 const NUM_COLUMNS = 2;
 const GRID_PADDING = spacing.md;
+const GRID_PADDING_TOP = 6;
 const COLUMN_GAP = spacing.sm;
 const SKELETON_COUNT = 6;
 
@@ -52,17 +53,6 @@ export function PhotoGrid({
     (windowWidth - GRID_PADDING * 2 - COLUMN_GAP * (NUM_COLUMNS - 1)) /
     NUM_COLUMNS;
 
-  // Skeleton mode
-  if (isLoading) {
-    return (
-      <View style={styles.skeletonGrid}>
-        {Array.from({ length: SKELETON_COUNT }, (_, i) => (
-          <SkeletonCard key={i} size={cardWidth} />
-        ))}
-      </View>
-    );
-  }
-
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<GalleryItem>) => (
       <PhotoCard
@@ -74,6 +64,17 @@ export function PhotoGrid({
     ),
     [cardWidth, onPressItem],
   );
+
+  // Skeleton mode
+  if (isLoading) {
+    return (
+      <View style={styles.skeletonGrid}>
+        {Array.from({ length: SKELETON_COUNT }, (_, i) => (
+          <SkeletonCard key={i} size={cardWidth} />
+        ))}
+      </View>
+    );
+  }
 
   // Data mode
   return (
@@ -106,6 +107,7 @@ export function PhotoGrid({
 const styles = StyleSheet.create({
   content: {
     padding: GRID_PADDING,
+    paddingTop: GRID_PADDING_TOP,
     gap: COLUMN_GAP,
   },
   row: {
@@ -118,6 +120,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     padding: GRID_PADDING,
+    paddingTop: GRID_PADDING_TOP,
     gap: COLUMN_GAP,
   },
 });

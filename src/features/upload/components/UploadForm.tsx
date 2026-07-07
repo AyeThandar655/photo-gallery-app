@@ -1,8 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { StyleSheet, View } from 'react-native';
 import { Button, TagInput, Text } from '@/shared/components/ui';
+import type { TagInputHandle } from '@/shared/components/ui';
 import { colors, spacing } from '@/shared/theme';
 import { UploadPhotoBodySchema } from '@/schemas';
 import type { UploadPhotoBody, UploadPhotoResponse } from '@/types';
@@ -18,6 +19,7 @@ interface UploadFormProps {
 export function UploadForm({ onSuccess }: UploadFormProps) {
   const mutation = useUploadPhoto();
   const { asset, pick, clear } = useImagePicker();
+  const tagInputRef = useRef<TagInputHandle>(null);
 
   const {
     control,
@@ -51,7 +53,9 @@ export function UploadForm({ onSuccess }: UploadFormProps) {
   }, [asset, setValue]);
 
   const onSubmit = (data: UploadPhotoBody) => {
-    mutation.mutate(data, {
+    const pending = tagInputRef.current?.flushPending() ?? null;
+    const tags = pending !== null ? [...data.tags, pending] : data.tags;
+    mutation.mutate({ ...data, tags }, {
       onSuccess: (response) => {
         onSuccess(response);
       },
@@ -73,6 +77,7 @@ export function UploadForm({ onSuccess }: UploadFormProps) {
         name="tags"
         render={({ field, fieldState }) => (
           <TagInput
+            ref={tagInputRef}
             label="Tags"
             hint="Press Return or comma to add a tag"
             value={field.value}

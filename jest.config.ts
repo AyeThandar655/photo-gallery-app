@@ -40,6 +40,11 @@ const config: Config = {
 
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
 
+  // MSW v2 native interceptor holds internal Node.js HTTP handles that outlive
+  // the test worker. forceExit prevents the spurious "worker failed to exit
+  // gracefully" warning without masking real open handles in application code.
+  forceExit: true,
+
   testMatch: [
     '**/__tests__/**/*.test.(ts|tsx)',
     '**/__tests__/**/*.spec.(ts|tsx)',

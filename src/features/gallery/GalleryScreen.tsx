@@ -1,5 +1,5 @@
-import { Stack, useRouter } from 'expo-router';
-import { useCallback } from 'react';
+import { Stack, useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { EmptyState, ErrorState } from '@/shared/components/feedback';
 import { ScreenContainer } from '@/shared/components/layout';
@@ -12,7 +12,27 @@ import { useGallery } from './useGallery';
 
 export function GalleryScreen() {
   const router = useRouter();
-  const { items, isLoading, isRefetching, error, refetch } = useGallery();
+  const { items, isLoading, isRefetching, error, refetch, refetchIds } = useGallery();
+
+  // Track only user-initiated pull-to-refresh so the spinner doesn't appear
+  // during background refetches triggered by useFocusEffect or mutations.
+  const [isManualRefreshing, setIsManualRefreshing] = useState(false);
+
+  useEffect(() => {
+    if (!isRefetching) setIsManualRefreshing(false);
+  }, [isRefetching]);
+
+  const handleRefresh = useCallback(() => {
+    setIsManualRefreshing(true);
+    refetch();
+  }, [refetch]);
+
+  // On focus: only refetch photo IDs (to pick up new uploads).
+  useFocusEffect(
+    useCallback(() => {
+      void refetchIds();
+    }, [refetchIds]),
+  );
 
   const handlePressItem = useCallback(
     (id: PhotoId) => {
@@ -50,8 +70,8 @@ export function GalleryScreen() {
       <PhotoGrid
         items={items}
         isLoading={isLoading}
-        refreshing={isRefetching}
-        onRefresh={refetch}
+        refreshing={isManualRefreshing}
+        onRefresh={handleRefresh}
         onPressItem={handlePressItem}
       />
     );
@@ -59,51 +79,54 @@ export function GalleryScreen() {
 
   return (
     <>
-      <Stack.Screen
-        options={{
-          title: 'My Gallery',
-          headerLargeTitle: true,
-          headerRight: () => (
-            <Pressable
-              onPress={() => router.push('/upload')}
-              hitSlop={8}
-              accessibilityRole="button"
-              accessibilityLabel="Upload a photo"
-              style={({ pressed }) => [
-                styles.uploadButton,
-                pressed && styles.uploadButtonPressed,
-              ]}
-            >
-              <Text variant="body" style={styles.uploadButtonText}>
-                +
-              </Text>
-            </Pressable>
-          ),
-        }}
-      />
+      <Stack.Screen options={{ title: 'Photo Gallery', headerRight: undefined }} />
       <ScreenContainer scrollable={false} padding={false}>
         {renderContent()}
+        <Pressable
+          onPress={() => router.push('/upload')}
+          accessibilityRole="button"
+          accessibilityLabel="Upload a photo"
+          style={({ pressed }) => [
+            styles.fab,
+            pressed && styles.fabPressed,
+          ]}
+        >
+          <Text style={styles.fabIcon}>+</Text>
+        </Pressable>
       </ScreenContainer>
     </>
   );
 }
 
+const FAB_SIZE = 56;
+
 const styles = StyleSheet.create({
   centred: {
     flex: 1,
   },
-  uploadButton: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: 6,
+  fab: {
+    position: 'absolute',
+    bottom: spacing.xl,
+    right: spacing.lg,
+    width: FAB_SIZE,
+    height: FAB_SIZE,
+    borderRadius: FAB_SIZE / 2,
+    backgroundColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 6,
+    elevation: 6,
   },
-  uploadButtonPressed: {
-    opacity: 0.6,
+  fabPressed: {
+    opacity: 0.8,
   },
-  uploadButtonText: {
-    color: colors.primary,
-    fontSize: 24,
-    lineHeight: 28,
-    fontWeight: '400',
+  fabIcon: {
+    color: '#fff',
+    fontSize: 28,
+    lineHeight: 32,
+    fontWeight: '300',
   },
 });

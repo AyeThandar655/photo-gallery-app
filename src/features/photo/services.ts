@@ -29,15 +29,14 @@ export async function updateMetadata(
   id: PhotoId,
   tags: string[],
 ): Promise<PhotoMetadata> {
-  const response = await apiClient.put<unknown>(
+  // Server expects { metadata: {...} } and returns { id } — not the full metadata.
+  // We set updatedAt to the current time and construct the return value from what we sent.
+  const updatedAt = new Date().toISOString();
+  await apiClient.put<unknown>(
     ENDPOINTS.metadata.detail(id),
-    { tags },
+    { metadata: { tags, updatedAt } },
   );
-  const result = safeParseResponse(PhotoMetadataSchema, response.data);
-  if (!result.success) {
-    throw result.error;
-  }
-  return result.data;
+  return { tags, updatedAt };
 }
 
 /**

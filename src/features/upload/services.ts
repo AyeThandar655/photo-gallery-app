@@ -11,9 +11,8 @@ export async function uploadPhoto(body: UploadPhotoBody): Promise<UploadPhotoRes
     { uri: body.uri, type: body.type, name: body.name } as unknown as Blob,
   );
 
-  for (const tag of body.tags) {
-    formData.append('tags', tag);
-  }
+  // Server stores metadata as a JSON string; include updatedAt per requirements
+  formData.append('metadata', JSON.stringify({ tags: body.tags, updatedAt: new Date().toISOString() }));
 
   const response = await apiClient.post<unknown>(ENDPOINTS.photos.list, formData, {
     headers: {

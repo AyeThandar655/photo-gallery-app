@@ -31,8 +31,9 @@ describe('fetchMetadata', () => {
 
   it('throws an AppError when the server returns malformed data', async () => {
     server.use(
+      // tags must be string[], so passing a number array fails validation
       http.get('http://localhost:3000/metadata/:id', () =>
-        HttpResponse.json({ bad: 'shape' }),
+        HttpResponse.json({ tags: [1, 2, 3] }),
       ),
     );
 
@@ -51,7 +52,7 @@ describe('fetchMetadata', () => {
 });
 
 describe('updateMetadata', () => {
-  it('returns updated PhotoMetadata on success', async () => {
+  it('returns PhotoMetadata constructed from sent tags on success', async () => {
     const newTags = ['street', 'art'];
     const result = await updateMetadata(ID, newTags);
 
@@ -69,10 +70,10 @@ describe('updateMetadata', () => {
     await expect(updateMetadata(ID, ['tag'])).rejects.toMatchObject(appErrorMatcher);
   });
 
-  it('throws an AppError when response fails schema validation', async () => {
+  it('throws an AppError on network failure', async () => {
     server.use(
       http.put('http://localhost:3000/metadata/:id', () =>
-        HttpResponse.json({ unexpected: true }),
+        HttpResponse.error(),
       ),
     );
 
