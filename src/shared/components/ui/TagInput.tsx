@@ -7,7 +7,7 @@ import {
   View,
 } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
-import { Text } from '@/shared/components/ui';
+import { Text } from './Text';
 import { colors, radii, spacing, typography } from '@/shared/theme';
 
 export type TagInputHandle = {
