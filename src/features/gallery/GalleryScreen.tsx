@@ -79,7 +79,7 @@ export function GalleryScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: 'Photo Gallery', headerRight: undefined }} />
+      <Stack.Screen options={{ title: 'Photo Gallery', headerBackVisible: false, headerRight: undefined }} />
       <ScreenContainer scrollable={false} padding={false}>
         {renderContent()}
         <Pressable

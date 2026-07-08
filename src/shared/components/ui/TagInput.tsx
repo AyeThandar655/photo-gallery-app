@@ -11,11 +11,6 @@ import { Text } from '@/shared/components/ui';
 import { colors, radii, spacing, typography } from '@/shared/theme';
 
 export type TagInputHandle = {
-  /**
-   * Commit any text currently in the input field as a tag.
-   * Returns the committed tag string, or null if there was nothing to commit.
-   * Call synchronously before reading form values for submission.
-   */
   flushPending: () => string | null;
 };
 

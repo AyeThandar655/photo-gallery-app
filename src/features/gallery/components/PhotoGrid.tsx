@@ -85,6 +85,7 @@ export function PhotoGrid({
       renderItem={renderItem}
       columnWrapperStyle={styles.row}
       contentContainerStyle={styles.content}
+      style={styles.list}
       showsVerticalScrollIndicator={false}
       initialNumToRender={6}
       maxToRenderPerBatch={4}
@@ -105,6 +106,9 @@ export function PhotoGrid({
 }
 
 const styles = StyleSheet.create({
+  list: {
+    flex: 1,
+  },
   content: {
     padding: GRID_PADDING,
     paddingTop: GRID_PADDING_TOP,
