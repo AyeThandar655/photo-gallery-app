@@ -149,13 +149,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 2,
   },
   tag: {
-    backgroundColor: colors.surface,
+    backgroundColor: colors.tagBackground,
     borderRadius: radii.full,
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,
     maxWidth: 80,
   },
   tagText: {
-    color: colors.textSecondary,
+    color: colors.tagText,
   },
 });

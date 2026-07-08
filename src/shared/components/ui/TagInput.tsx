@@ -64,7 +64,6 @@ export const TagInput = forwardRef<TagInputHandle, TagInputProps>(function TagIn
   };
 
   const handleChangeText = (text: string) => {
-    // iOS autocorrect may append a space after comma → check both ", " and ","
     if (text.includes(',')) {
       commitTag(text.replace(/,.*$/, ''));
     } else {
@@ -129,7 +128,7 @@ export const TagInput = forwardRef<TagInputHandle, TagInputProps>(function TagIn
           hasError && styles.inputError,
         ]}
         accessibilityLabel={label ?? 'Tags'}
-        accessibilityHint="Type a tag and press Return or comma to add it"
+        accessibilityHint="Type a tag and press return or comma to add it"
         aria-invalid={hasError}
       />
 
@@ -162,14 +161,14 @@ const styles = StyleSheet.create({
   chip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.primary,
+    backgroundColor: colors.tagBackground,
     borderRadius: radii.full,
     paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
+    paddingVertical: 2,
     gap: 4,
   },
   chipText: {
-    color: colors.textInverse,
+    color: colors.tagText,
   },
   chipRemove: {
     borderRadius: radii.full,
@@ -179,7 +178,7 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   chipRemoveText: {
-    color: colors.textInverse,
+    color: colors.tagText,
     fontSize: 14,
     lineHeight: 16,
   },

@@ -1,5 +1,6 @@
 import { Image, Pressable, StyleSheet, View } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Text } from '@/shared/components/ui';
 import { colors, radii, spacing, typography } from '@/shared/theme';
 
@@ -50,9 +51,12 @@ export function ImagePreview({ uri, onPress, error, style }: ImagePreviewProps) 
         accessibilityLabel="Choose a photo"
         accessibilityHint="Opens your photo library"
       >
-        <Text style={styles.placeholderIcon} accessibilityElementsHidden>
-          📷
-        </Text>
+        <Ionicons
+          name="images-outline"
+          size={48}
+          color={colors.textTertiary}
+          accessibilityElementsHidden
+        />
         <Text variant="body" color="secondary" align="center">
           Tap to choose a photo
         </Text>
@@ -72,7 +76,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '100%',
-    aspectRatio: 1,
+    aspectRatio: 4 / 3,
     borderRadius: radii.lg,
     backgroundColor: colors.skeleton,
   },
@@ -93,7 +97,7 @@ const styles = StyleSheet.create({
   },
   placeholder: {
     width: '100%',
-    aspectRatio: 1,
+    aspectRatio: 4 / 3,
     borderRadius: radii.lg,
     borderWidth: 2,
     borderStyle: 'dashed',
@@ -110,8 +114,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surfaceSecondary,
   },
   placeholderIcon: {
-    fontSize: 40,
-    lineHeight: 48,
+    // kept for layout spacing; icon size is set on the Ionicons component
   },
   errorText: {
     color: colors.textError,

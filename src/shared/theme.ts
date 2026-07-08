@@ -27,6 +27,10 @@ export const colors = {
   textError: '#FF3B30',
   textBrand: '#007AFF',
 
+  // Tag chips (gallery + upload screen)
+  tagBackground: '#DBEAFE',
+  tagText: '#1D4ED8',
+
   // Skeleton shimmer
   skeleton: '#E5E5EA',
 

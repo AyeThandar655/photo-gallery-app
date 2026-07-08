@@ -53,7 +53,7 @@ export function MetadataForm({ photoId, initialTags, onSuccess }: MetadataFormPr
           <TagInput
             ref={tagInputRef}
             label="Tags"
-            hint="Press Return or comma to add a tag"
+            hint="Press return or comma to add a tag"
             value={field.value}
             onChange={field.onChange}
             error={fieldState.error?.message}
@@ -62,9 +62,16 @@ export function MetadataForm({ photoId, initialTags, onSuccess }: MetadataFormPr
       />
 
       {mutation.isError && (
-        <Text variant="caption" style={styles.mutationError}>
-          {getUserMessage(mutation.error)}
-        </Text>
+        <View
+          style={styles.errorBanner}
+          accessibilityRole="alert"
+          accessibilityLiveRegion="assertive"
+          accessibilityLabel={getUserMessage(mutation.error)}
+        >
+          <Text variant="caption" style={styles.errorBannerText}>
+            {getUserMessage(mutation.error)}
+          </Text>
+        </View>
       )}
 
       <Button
@@ -81,13 +88,19 @@ export function MetadataForm({ photoId, initialTags, onSuccess }: MetadataFormPr
 
 const styles = StyleSheet.create({
   container: {
-    gap: spacing.md,
+    gap: spacing.lg,
   },
-  mutationError: {
+  errorBanner: {
+    backgroundColor: colors.surface,
+    borderLeftWidth: 3,
+    borderLeftColor: colors.destructive,
+    borderRadius: 4,
+    padding: spacing.sm,
+  },
+  errorBannerText: {
     color: colors.textError,
   },
   button: {
-    alignSelf: 'center',
-    minWidth: 160,
+    // full width, same as Upload screen
   },
 });

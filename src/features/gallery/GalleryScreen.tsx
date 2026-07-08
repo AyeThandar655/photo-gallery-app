@@ -1,9 +1,9 @@
 import { Stack, useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { EmptyState, ErrorState } from '@/shared/components/feedback';
 import { ScreenContainer } from '@/shared/components/layout';
-import { Text } from '@/shared/components/ui';
 import { colors, spacing } from '@/shared/theme';
 import type { PhotoId } from '@/types';
 import { getUserMessage, isRetryableError } from '@/utils';
@@ -58,7 +58,7 @@ export function GalleryScreen() {
       return (
         <View style={styles.centred}>
           <EmptyState
-            icon="📷"
+            icon={<Ionicons name="images-outline" size={64} color={colors.textTertiary} />}
             title="No photos yet"
             message="Upload your first photo to get started."
           />
@@ -91,7 +91,7 @@ export function GalleryScreen() {
             pressed && styles.fabPressed,
           ]}
         >
-          <Text style={styles.fabIcon}>+</Text>
+          <Ionicons name="images" size={26} color="#fff" />
         </Pressable>
       </ScreenContainer>
     </>
@@ -122,11 +122,5 @@ const styles = StyleSheet.create({
   },
   fabPressed: {
     opacity: 0.8,
-  },
-  fabIcon: {
-    color: '#fff',
-    fontSize: 28,
-    lineHeight: 32,
-    fontWeight: '300',
   },
 });

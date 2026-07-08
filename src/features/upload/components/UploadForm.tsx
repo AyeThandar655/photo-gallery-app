@@ -79,7 +79,7 @@ export function UploadForm({ onSuccess }: UploadFormProps) {
           <TagInput
             ref={tagInputRef}
             label="Tags"
-            hint="Press Return or comma to add a tag"
+            hint="Press return or comma to add a tag"
             value={field.value}
             onChange={field.onChange}
             error={fieldState.error?.message}

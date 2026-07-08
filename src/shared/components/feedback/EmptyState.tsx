@@ -1,4 +1,5 @@
 import { StyleSheet, View } from 'react-native';
+import type { ReactNode } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
 import { Text } from '../ui/Text';
 import { Button } from '../ui/Button';
@@ -12,7 +13,7 @@ interface EmptyStateAction {
 interface EmptyStateProps {
   title: string;
   message?: string;
-  icon?: string;
+  icon?: ReactNode;
   action?: EmptyStateAction;
   style?: StyleProp<ViewStyle>;
 }
@@ -27,9 +28,9 @@ export function EmptyState({
   return (
     <View style={[styles.container, style]}>
       {icon !== undefined && (
-        <Text style={styles.icon} accessibilityElementsHidden>
+        <View style={styles.icon} accessibilityElementsHidden>
           {icon}
-        </Text>
+        </View>
       )}
 
       <Text variant="heading" align="center">
@@ -70,9 +71,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   icon: {
-    fontSize: 48,
-    lineHeight: 56,
     marginBottom: spacing.xs,
+    alignItems: 'center',
   },
   message: {
     maxWidth: 280,
