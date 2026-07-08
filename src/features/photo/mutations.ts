@@ -37,7 +37,7 @@ export function useUpdateMetadata() {
       // Update detail cache.
       queryClient.setQueryData<PhotoMetadata | null>(
         queryKeys.metadata.detail(id),
-        (old) =>
+        (old: PhotoMetadata | null | undefined) =>
           old !== undefined && old !== null
             ? { ...old, tags, updatedAt: optimisticTimestamp }
             : { tags, updatedAt: optimisticTimestamp },
@@ -46,7 +46,7 @@ export function useUpdateMetadata() {
       // Update the matching entry inside metadata.all cache.
       queryClient.setQueryData<PhotoMetadataEntry[]>(
         queryKeys.metadata.all(),
-        (old = []) =>
+        (old: PhotoMetadataEntry[] | undefined = []) =>
           old.map((entry) =>
             entry.id === id
               ? { ...entry, tags, updatedAt: optimisticTimestamp }
@@ -111,7 +111,7 @@ export function useDeletePhoto() {
       // Optimistically remove from metadata list.
       queryClient.setQueryData<PhotoMetadataEntry[]>(
         queryKeys.metadata.all(),
-        (old = []) => old.filter((entry) => entry.id !== id),
+        (old: PhotoMetadataEntry[] | undefined = []) => old.filter((entry) => entry.id !== id),
       );
 
       return { previousIds, previousAll };

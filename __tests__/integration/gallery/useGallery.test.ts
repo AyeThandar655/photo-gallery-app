@@ -18,10 +18,26 @@ describe('useGallery', () => {
   it('starts in loading state', async () => {
     const { Wrapper, queryClient } = createWrapper();
     activeQueryClient = queryClient;
-    const { result } = await renderHook(() => useGallery(), { wrapper: Wrapper });
 
-    expect(result.current.isLoading).toBe(true);
-    expect(result.current.items).toEqual([]);
+    // React 19's async act (used internally by renderHook) waits for all
+    // pending effects — including HTTP responses — before returning. The
+    // initial loading=true state is therefore transient. Capture it during
+    // the first render pass instead of asserting after the hook settles.
+    const renderStates: { isLoading: boolean; items: unknown[] }[] = [];
+
+    const { result } = await renderHook(
+      () => {
+        const g = useGallery();
+        renderStates.push({ isLoading: g.isLoading, items: g.items });
+        return g;
+      },
+      { wrapper: Wrapper },
+    );
+
+    // First render should have been in loading state
+    expect(renderStates[0]?.isLoading).toBe(true);
+    expect(renderStates[0]?.items).toEqual([]);
+    // Final settled state should have no error
     expect(result.current.error).toBeNull();
   });
 

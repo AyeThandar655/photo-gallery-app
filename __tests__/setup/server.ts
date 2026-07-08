@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw';
-import { setupServer } from 'msw/native';
+import { setupServer } from 'msw/node';
 
 const BASE = 'http://localhost:3000';
 

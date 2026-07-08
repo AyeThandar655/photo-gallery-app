@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import type { AppError } from '@/types';
+import type { AppError, PhotoId, PhotoMetadataEntry } from '@/types';
 import { usePhotoIds, useAllMetadata } from './queries';
 import { getPhotoImageUri } from './services';
 import type { GalleryItem } from './types';
@@ -21,16 +21,16 @@ export function useGallery(): UseGalleryResult {
     const ids = idsQuery.data;
     if (!ids) return [];
 
-    const metadataMap = new Map(
-      (metadataQuery.data ?? []).map(entry => [entry.id, entry]),
+    const metadataMap = new Map<PhotoId, PhotoMetadataEntry>(
+      (metadataQuery.data ?? []).map((entry: PhotoMetadataEntry) => [entry.id, entry]),
     );
 
-    return ids.map(id => {
+    return ids.map((id: PhotoId) => {
       const entry = metadataMap.get(id);
       return {
         id,
         imageUri: getPhotoImageUri(id),
-        metadata: entry !== undefined
+        metadata: entry
           ? { updatedAt: entry.updatedAt, tags: entry.tags }
           : null,
       };

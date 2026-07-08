@@ -3,7 +3,7 @@ import type { Result } from '@/types';
 import { createAppError } from './errorUtils';
 
 export function safeParseResponse<T>(
-  schema: z.ZodType<T>,
+  schema: z.ZodType<T, any, any>,
   data: unknown,
 ): Result<T> {
   const result = schema.safeParse(data);
