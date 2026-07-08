@@ -1,13 +1,17 @@
 # Photo Gallery App
 
-A production-quality mobile photo gallery built with React Native and Expo. Browse, upload, tag, and delete photos — with offline support, optimistic UI updates, automatic retry, and full TypeScript coverage throughout.
+A React Native (Expo) application for uploading, viewing, editing, and managing photos with resilient networking and a production-oriented architecture.
+
+## Overview
+
+The application consumes a REST API that intentionally returns random failures. It demonstrates resilient networking, optimistic UI updates, and a production-oriented architecture built with Expo and TanStack React Query.
 
 ---
 
 ## Features
 
 - **Gallery view** — two-column grid with skeleton loading, pull-to-refresh, and empty state
-- **Photo detail** — full-size image with fade-in and automatic retry (up to 3×) on server error; editable tag form with changes appearing instantly via optimistic updates that roll back automatically on failure
+- **Photo detail** — full-size image with fade-in and automatic retry for transient server failures on server error; editable tag form with changes appearing instantly via optimistic updates that roll back automatically on failure
 - **Upload** — pick a photo from your device library and assign tags before uploading
 - **Offline banner** — animated overlay appears whenever the device loses connectivity; React Query pauses and resumes all network requests automatically
 - **Error handling** — every API error is normalised to a typed `AppError`; retryable errors (503, 429, network timeouts) trigger exponential backoff with jitter; non-retryable errors (404, 400) surface immediately
@@ -17,20 +21,20 @@ A production-quality mobile photo gallery built with React Native and Expo. Brow
 
 ## Tech Stack
 
-| Layer | Library | Version |
-|---|---|---|
-| Runtime | React Native | 0.86.0 |
-| Framework | Expo | 57.0.2 |
-| Routing | Expo Router | ~57.0.3 |
-| Server state | TanStack React Query | ^5.101.2 |
-| HTTP client | Axios | ^1.18.1 |
-| Schema validation | Zod | ^4.4.3 |
-| Forms | React Hook Form + @hookform/resolvers | ^7.81 / ^5.4 |
-| Animations | React Native Reanimated | 4.5.0 |
-| Network info | @react-native-community/netinfo | ^12.0.1 |
-| Image picker | expo-image-picker | ~57.0.2 |
-| Language | TypeScript | ~6.0.3 |
-| Testing | Jest 29 + React Native Testing Library + MSW v2 | — |
+| Layer             | Library                                         | Version      |
+| ----------------- | ----------------------------------------------- | ------------ |
+| Runtime           | React Native                                    | 0.81.5       |
+| Framework         | Expo                                            | ~54.0.0      |
+| Routing           | Expo Router                                     | ~6.0.24      |
+| Server state      | TanStack React Query                            | ^5.101.2     |
+| HTTP client       | Axios                                           | ^1.18.1      |
+| Schema validation | Zod                                             | ^3.23.8      |
+| Forms             | React Hook Form + @hookform/resolvers           | ^7.54 / ^3.9 |
+| Animations        | React Native Reanimated                         | ~4.1.1       |
+| Network info      | @react-native-community/netinfo                 | 11.4.1       |
+| Image picker      | expo-image-picker                               | ~17.0.11     |
+| Language          | TypeScript                                      | ~5.9.2       |
+| Testing           | Jest 29 + React Native Testing Library + MSW v2 | —            |
 
 ---
 
@@ -38,7 +42,7 @@ A production-quality mobile photo gallery built with React Native and Expo. Brow
 
 - **Node.js** ≥ 18
 - **npm** ≥ 9
-- **Expo Go** (latest from the App Store / Play Store — requires SDK 57)
+- **Expo Go** (latest from the App Store / Play Store — requires SDK 54)
 - A running instance of the backend API (see [Environment Variables](#environment-variables))
 
 ---
@@ -62,7 +66,7 @@ npm install --legacy-peer-deps
 Create a `.env.local` file in the project root:
 
 ```env
-EXPO_PUBLIC_API_BASE_URL=http://<your-server-ip>:3000
+EXPO_PUBLIC_API_BASE_URL=http://<your-server-ip>:3003
 ```
 
 > **Note:** The `EXPO_PUBLIC_` prefix is required. Expo strips variables without it at build time.
@@ -74,6 +78,7 @@ npx expo start --clear
 ```
 
 Then:
+
 - Press **i** to open on iOS simulator
 - Press **a** to open on Android emulator
 - Scan the QR code with **Expo Go** on a physical device
@@ -159,22 +164,23 @@ features/<name>/
   index.ts          ← barrel export
 ```
 
-Shared UI components (`TagInput`, `Button`, etc.) live in `src/shared/components/ui` and are consumed by any feature.
+Shared UI components are located in `src/shared/components/ui` and reused across all features.
 
-### Error Model
+### Error Handling
 
-All errors are normalised to a single `AppError` plain object at the Axios interceptor:
+The provided backend intentionally returns random failures.
 
-```typescript
-type AppError = {
-  type: AppErrorType;   // 'NETWORK_ERROR' | 'SERVICE_UNAVAILABLE' | 'NOT_FOUND' | ...
-  message: string;      // user-facing message
-  retryable: boolean;   // drives React Query retry and UI retry button visibility
-  statusCode?: number;
-};
-```
+To provide a smooth user experience, the application includes:
 
-Zod validation failures at API response boundaries are caught by `safeParseResponse` and surfaced as `VALIDATION_ERROR`.
+- Typed `AppError` model
+- Automatic retry for retryable errors
+- Exponential backoff with jitter
+- Optimistic UI updates
+- Automatic rollback when mutations fail
+- Offline detection with React Query network awareness
+- Loading, empty, and error states throughout the application
+
+This approach allows the application to remain responsive and recover gracefully from the backend's intentionally unstable behavior.
 
 ### Retry Strategy
 
@@ -204,15 +210,15 @@ delay = clamp(500 × 2^(attempt-1), 8000) × (0.7 … 1.0)
 
 The app expects a REST backend at `EXPO_PUBLIC_API_BASE_URL`.
 
-| Method | Path | Description |
-|--------|------|-------------|
-| `GET` | `/photos` | Returns `string[]` of photo IDs |
-| `GET` | `/photos/:id` | Serves the binary image (used as `Image` `uri`, not fetched via Axios) |
-| `POST` | `/photos` | Upload `multipart/form-data` with `photo` file and `metadata` JSON field (`{ tags, updatedAt }`); server returns `{ id }` only — the app constructs the full response locally |
-| `DELETE` | `/photos/:id` | Deletes photo and its metadata; returns `204` |
-| `GET` | `/metadata` | Returns `Array<{ id, tags, updatedAt }>` |
-| `GET` | `/metadata/:id` | Returns `{ tags, updatedAt }` for one photo |
-| `PUT` | `/metadata/:id` | Body `{ metadata: { tags: string[], updatedAt: string } }`; server returns `{ id }` — the app constructs the updated metadata locally |
+| Method   | Path            | Description                                                                                                 |
+| -------- | --------------- | ----------------------------------------------------------------------------------------------------------- |
+| `GET`    | `/photos`       | Returns `string[]` of photo IDs                                                                             |
+| `GET`    | `/photos/:id`   | Serves the binary image (used as `Image` `uri`, not fetched via Axios)                                      |
+| `POST`   | `/photos`       | Upload a photo using multipart/form-data with a `photo` file and a `metadata` JSON field. Returns `{ id }`. |
+| `DELETE` | `/photos/:id`   | Deletes a photo and its metadata. Returns `200 OK`.                                                         |
+| `GET`    | `/metadata`     | Returns `Array<{ id, tags, updatedAt }>`                                                                    |
+| `GET`    | `/metadata/:id` | Returns `{ tags, updatedAt }` for one photo                                                                 |
+| `PUT`    | `/metadata/:id` | Updates the metadata for a photo. Returns `{ id }`.                                                         |
 
 ---
 
@@ -230,12 +236,11 @@ npm test
 npm run test:coverage
 ```
 
-
 ### Test architecture
 
-| Layer | Tool | What is tested |
-|---|---|---|
-| Unit | Jest | `smartRetry`, `retryDelay`, all Zod schemas, `normalizeAxiosError`, `normalizeError`, `safeParseResponse`, all `AppErrorType` mappings |
+| Layer       | Tool                | What is tested                                                                                                                                                                                                       |
+| ----------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Unit        | Jest                | `smartRetry`, `retryDelay`, all Zod schemas, `normalizeAxiosError`, `normalizeError`, `safeParseResponse`, all `AppErrorType` mappings                                                                               |
 | Integration | Jest + RTL + MSW v2 | `fetchPhotoIds`, `fetchAllMetadata`, `fetchMetadata`, `updateMetadata`, `deletePhoto` services; `useGallery` hook; `useUpdateMetadata` and `useDeletePhoto` mutations including optimistic update and rollback paths |
 
 Each integration test suite creates a fresh `QueryClient` per test (`retry: false`, `gcTime: Infinity`) and tears down cache via `queryClient.clear()` in `afterEach`.
